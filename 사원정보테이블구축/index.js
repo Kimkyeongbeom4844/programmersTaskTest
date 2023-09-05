@@ -55,6 +55,7 @@ window.onload = async () => {
     for (let i = 0; i < buttonList.length; i++) {
       const buttonValue = buttonList[i].dataset.value;
       buttonList[i].addEventListener("click", () => {
+        console.log(111);
         switch (buttonValue) {
           case "prev":
             dataArrIndex = 0;
