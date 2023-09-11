@@ -73,8 +73,7 @@ window.onload = async () => {
 
   $SearchInput__input.addEventListener("keyup", async (e) => {
     try {
-      console.log(e);
-
+      // console.log(e);
       switch (e.key) {
         case "ArrowUp":
           if (isSelectMode === true) {
