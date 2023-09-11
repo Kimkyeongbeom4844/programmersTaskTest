@@ -1,15 +1,14 @@
 window.onload = async () => {
-  //DOM 접근
+  // DOM 접근
   const $SearchInput = document.querySelector(".SearchInput");
   const $SearchInput__input = document.querySelector(".SearchInput__input");
   const $Suggestion = document.querySelector(".Suggestion");
   const $SelectedLanguage = document.querySelector(".SelectedLanguage");
-  console.log($SelectedLanguage.children[0]);
 
-  //인풋자동포커스
+  // 인풋자동포커스
   $SearchInput__input.focus();
 
-  //변수들
+  // 변수들
   let isSelectMode = false;
   let wordArr = [];
   let wordArrIndex = 0;
@@ -18,7 +17,7 @@ window.onload = async () => {
   const baseUrl =
     "https://wr4a6p937i.execute-api.ap-northeast-2.amazonaws.com/dev";
 
-  //함수들
+  // 함수들
   const suggestionDisplayFunction = () => {
     if ($Suggestion.children.length === 0) {
       $Suggestion.style.display = "none";
@@ -45,11 +44,22 @@ window.onload = async () => {
     }
   };
 
-  suggestionDisplayFunction(); //초기 1회 호출 후 $Suggestion style 결정
+  const clear$Suggestion = () => {
+    if ($Suggestion.children.length !== 0) {
+      while ($Suggestion.children[0].children.length) {
+        $Suggestion.children[0].removeChild(
+          $Suggestion.children[0].children[0]
+        );
+      }
+      $Suggestion.children[0].remove();
+    }
+  };
 
-  //이벤트들
+  // 초기 실행
+  suggestionDisplayFunction(); // 초기 1회 호출 후 $Suggestion style 결정
+
+  // 이벤트들
   $Suggestion.addEventListener("click", (e) => {
-    console.log(1111);
     if (/^li$/i.test(e.target.tagName)) {
       alert(e.target.innerHTML);
       updateSelectList(e.target.innerHTML);
@@ -63,6 +73,8 @@ window.onload = async () => {
 
   $SearchInput__input.addEventListener("keyup", async (e) => {
     try {
+      console.log(e);
+
       switch (e.key) {
         case "ArrowUp":
           if (isSelectMode === true) {
@@ -78,9 +90,6 @@ window.onload = async () => {
             }
           }
           break;
-        case "ArrowLeft":
-        case "ArrowRight":
-          break;
         case "Enter":
           if ($Suggestion.children.length !== 0) {
             if (isSelectMode === true) {
@@ -95,15 +104,16 @@ window.onload = async () => {
           isSelectMode = false;
           wordArrIndex = 0;
           const inputData = $SearchInput__input.value;
-          $Suggestion.innerHTML = "";
+          // $Suggestion.innerHTML = "";
+          clear$Suggestion();
           if (inputData.length !== 0) {
             const response = await fetch(
               `${baseUrl}/languages?keyword=${inputData}`
             );
             const data = await response.json();
-            // console.log(data)
+            // console.log(data);
             wordArr = [];
-            $Suggestion.innerHTML = "";
+            clear$Suggestion();
             if (data.length === 0) return;
             const $ul = document.createElement("ul");
             for (let i = 0; i < data.length; i++) {
