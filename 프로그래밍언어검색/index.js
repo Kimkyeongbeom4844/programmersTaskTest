@@ -49,6 +49,7 @@ window.onload = async () => {
 
   //이벤트들
   $Suggestion.addEventListener("click", (e) => {
+    console.log(1111);
     if (/^li$/i.test(e.target.tagName)) {
       alert(e.target.innerHTML);
       updateSelectList(e.target.innerHTML);
