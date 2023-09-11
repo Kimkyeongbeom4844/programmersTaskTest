@@ -1,5 +1,6 @@
 window.onload = async () => {
-  //functions
+  // functions
+  // let, const 호이스팅으로 인한 TDZ로 인해 함수 표현식으로 작성된 코드 최상단으로 수정
   const showData = () => {
     for (let j = 0; j < dataArr[dataArrIndex].length; j++) {
       tableBody.innerHTML += `
@@ -88,14 +89,14 @@ window.onload = async () => {
   let tempArr = [];
   let pagePerShow = 5;
   let dataArrIndex = 0;
-
   dataArr = [];
-  dataArrSetting();
 
-  // add Event
+  // initializing
+  dataArrSetting();
   showData();
   buttonClickEvent();
 
+  // add Event
   dropdownSelect.addEventListener("change", (e) => {
     pagePerShow = Number(e.target.value);
     dataArr = [];
