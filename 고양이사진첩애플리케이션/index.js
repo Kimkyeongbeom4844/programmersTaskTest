@@ -111,7 +111,6 @@ window.onload = async () => {
   });
 
   $imageViewer.addEventListener("click", (e) => {
-    console.log(e.target.tagName);
     if (e.target.tagName === "DIV") {
       $imageViewer.style.display = "none";
     }
