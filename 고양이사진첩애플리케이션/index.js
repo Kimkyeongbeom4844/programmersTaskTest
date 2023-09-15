@@ -3,6 +3,7 @@ window.onload = async () => {
   const $loading = document.querySelector(".Loading");
   const $Nodes = document.querySelector(".Nodes");
   const $imageViewer = document.querySelector(".ImageViewer");
+  const $breadcrumb = document.querySelector(".Breadcrumb");
 
   // 변수들
   const apiUrl =
@@ -16,9 +17,18 @@ window.onload = async () => {
   const showNodes = async (urlPath) => {
     try {
       $loading.style.display = "block";
-      const response = await fetch(`${apiUrl}/${urlPath ? urlPath : ""}`);
+      const response = await fetch(`${apiUrl}/${urlPath ? urlPath : ""}`); // 502오류가 뜨는데 이거 문의해야되나..
       data = await response.json();
-      console.log(data);
+      while ($breadcrumb.children.length > 1) {
+        $breadcrumb.removeChild(
+          $breadcrumb.children[$breadcrumb.children.length - 1]
+        );
+      }
+      for (let i = 0; i < pathStack.length; i++) {
+        $breadcrumb.innerHTML += `
+          <div>${pathStack[i].name}</div>
+        `;
+      }
       if (data.length === 0) return;
       while ($Nodes.children.length !== 0) {
         $Nodes.removeChild($Nodes.children[0]);
@@ -36,7 +46,7 @@ window.onload = async () => {
         switch (data[i].type) {
           case "DIRECTORY":
             $Nodes.innerHTML += `
-            <div class="Node" data-type='DIRECTORY' data-id=${data[i].id}>
+            <div class="Node" data-type='DIRECTORY' data-id=${data[i].id} data-name=${data[i].name}>
                 <img src="./assets/directory.png">
                 <div>${data[i].name}</div>
             </div>
@@ -57,8 +67,12 @@ window.onload = async () => {
           switch ($Nodes.children[i].dataset.type) {
             case "DIRECTORY":
               console.log($Nodes.children[i].dataset.id);
-              pathStack.push($Nodes.children[i].dataset.id);
-              return await showNodes(pathStack[pathStack.length - 1]);
+              pathStack.push({
+                name: $Nodes.children[i].dataset.name,
+                id: $Nodes.children[i].dataset.id,
+              });
+              await showNodes(pathStack[pathStack.length - 1].id);
+              break;
             case "FILE":
               $loading.style.display = "block";
               console.log($Nodes.children[i].dataset.path);
@@ -72,12 +86,14 @@ window.onload = async () => {
               break;
             default:
               pathStack.pop();
-              return await showNodes(pathStack[pathStack.length - 1]);
+              await showNodes(pathStack?.[pathStack.length - 1]?.id);
+              break;
           }
         });
       }
     } catch (error) {
-      throw new Error(error);
+      console.log(error);
+      window.location.reload();
     } finally {
       $loading.style.display = "none";
     }
@@ -85,12 +101,7 @@ window.onload = async () => {
 
   // 초기세팅
   $imageViewer.style.display = "none";
-  try {
-    await showNodes();
-  } catch (error) {
-    console.log(error);
-    window.location.reload();
-  }
+  await showNodes();
 
   // 이벤트들
   window.addEventListener("keydown", (e) => {
